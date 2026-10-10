@@ -219,7 +219,7 @@ function Experiment({ records, setRecords, onNext, done }: { records: Records; s
   );
 }
 
-function Picker({ label, items, value, onChange, suffix = "", disabled }: { label: string; items: Sym[]; value: Sym; onChange: (s: Sym) => void; suffix?: string; disabled?: (s: Sym) => boolean }) {
+function Picker({ label, items, value, onChange, suffix = "", disabled }: { label: string; items: Sym[]; value: Sym; onChange: (s: Sym) => void; suffix?: string; disabled?: ((s: Sym) => boolean) | undefined }) {
   return (
     <div className="mt-4">
       <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">{label}</p>
@@ -242,7 +242,7 @@ function Picker({ label, items, value, onChange, suffix = "", disabled }: { labe
   );
 }
 
-function OrderList({ items, onMove, highlight }: { items: Sym[]; onMove?: (i: number, d: -1 | 1) => void; highlight?: Sym }) {
+function OrderList({ items, onMove, highlight }: { items: Sym[]; onMove?: ((i: number, d: -1 | 1) => void) | undefined; highlight?: Sym | undefined }) {
   return (
     <ol className="space-y-2">
       {items.map((x, i) => (

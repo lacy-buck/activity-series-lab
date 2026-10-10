@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 export type Records = Record<string, "R" | "NR">;
 export const key = (m: Sym, i: Sym) => `${m}|${i}`;
 
-export function DataTable({ metals, records, highlight }: { metals: Sym[]; records: Records; highlight?: string }) {
+export function DataTable({ metals, records, highlight }: { metals: Sym[]; records: Records; highlight?: string | undefined }) {
   return (
     <div className="overflow-x-auto">
       <table className="w-full border-collapse font-mono text-sm">
