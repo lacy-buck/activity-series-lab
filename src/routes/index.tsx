@@ -266,7 +266,7 @@ function SeriesStep({ s, up }: { s: State; up: (p: Partial<State>) => void }) {
   const [feedback, setFeedback] = useState<string | null>(null);
   const move = (i: number, d: -1 | 1) => {
     const a = [...s.series];
-    [a[i], a[i + d]] = [a[i + d], a[i]];
+    const t = a[i] as Sym; a[i] = a[i + d] as Sym; a[i + d] = t;
     up({ series: a }); setFeedback(null);
   };
   const check = () => {
