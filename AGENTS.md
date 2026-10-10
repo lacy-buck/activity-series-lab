@@ -8,3 +8,6 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Lab chemistry data and rules live in src/lib/lab.ts; UI reads from it so scenarios can change in one place.
+- Student progress is stored in browser localStorage (no backend) — the activity is anonymous practice.

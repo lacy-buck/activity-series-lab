@@ -31,7 +31,7 @@ export function reacts(metal: Sym, ion: Sym): boolean {
 }
 
 export function solutionName(ion: Sym) {
-  return `${ion}(NO₃)₂`;
+  return `${ion}Cl₂`;
 }
 
 export function observation(metal: Sym, ion: Sym): string {
@@ -51,7 +51,7 @@ export function shuffle<T>(arr: T[]): T[] {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
+    const t = a[i] as T; a[i] = a[j] as T; a[j] = t;
   }
   return a;
 }
@@ -67,15 +67,15 @@ export interface Question {
 export const QUESTIONS: Question[] = [
   {
     id: "q1",
-    prompt: "A strip of Velmar (Vm) is placed in Zb(NO₃)₂ and a reaction occurs. Which particles LOSE electrons?",
-    options: ["Zb²⁺ ions", "Vm atoms", "NO₃⁻ ions", "Zb atoms"],
+    prompt: "A strip of Velmar (Vm) is placed in ZbCl₂ and a reaction occurs. Which particles LOSE electrons?",
+    options: ["Zb²⁺ ions", "Vm atoms", "Cl⁻ ions", "Zb atoms"],
     answer: 1,
     explain: "Vm is higher in the series, so Vm atoms give up electrons and become Vm²⁺ ions (oxidation).",
   },
   {
     id: "q2",
     prompt: "In that same reaction, electrons move…",
-    options: ["from Zb²⁺ ions to Vm atoms", "from NO₃⁻ ions to Vm atoms", "from Vm atoms to Zb²⁺ ions", "electrons do not move"],
+    options: ["from Zb²⁺ ions to Vm atoms", "from Cl⁻ ions to Vm atoms", "from Vm atoms to Zb²⁺ ions", "electrons do not move"],
     answer: 2,
     explain: "The more active metal atom hands its electrons to the less active metal's ion.",
   },
@@ -89,24 +89,24 @@ export const QUESTIONS: Question[] = [
   {
     id: "q4",
     prompt: "What is the black, crumbly coating that forms on the Vm strip?",
-    options: ["Velmar metal", "Zorbium metal", "Nitrate crystals", "Rust"],
+    options: ["Velmar metal", "Zorbium metal", "Salt crystals", "Rust"],
     answer: 1,
     explain: "Zb²⁺ ions picked up electrons and turned into solid Zb, which coats the strip.",
   },
   {
     id: "q5",
-    prompt: "Which ion is a spectator in Vm + Zb(NO₃)₂?",
-    options: ["Vm²⁺", "Zb²⁺", "NO₃⁻", "There is no spectator"],
+    prompt: "Which ion is a spectator in Vm + ZbCl₂?",
+    options: ["Vm²⁺", "Zb²⁺", "Cl⁻", "There is no spectator"],
     answer: 2,
-    explain: "Nitrate is in the solution before and after, unchanged. It doesn't gain or lose electrons.",
+    explain: "Chloride is in the solution before and after, unchanged. It doesn't gain or lose electrons.",
   },
   {
     id: "q6",
-    prompt: "Why did Thessium (Th) show NO reaction in Kr(NO₃)₂?",
+    prompt: "Why did Thessium (Th) show NO reaction in KrCl₂?",
     options: [
       "Th atoms hold their electrons more tightly than Kr atoms do, so Kr²⁺ can't take electrons from Th",
       "Kr²⁺ ions have too many electrons",
-      "Nitrate blocks the reaction",
+      "Chloride blocks the reaction",
       "Th is more active than Kr",
     ],
     answer: 0,
@@ -121,7 +121,7 @@ export const QUESTIONS: Question[] = [
   },
   {
     id: "q8",
-    prompt: "Ombrium metal is placed in blue Qn(NO₃)₂. Ombrium ions are colorless. What would you observe?",
+    prompt: "Ombrium metal is placed in blue QnCl₂. Ombrium ions are colorless. What would you observe?",
     options: [
       "No change",
       "A reddish-brown coating forms and the blue color fades",
@@ -134,4 +134,10 @@ export const QUESTIONS: Question[] = [
 ];
 
 export const WRITTEN_PROMPT =
-  "In your own words: A strip of Kryllite (Kr) is placed in Th(NO₃)₂. Describe what happens to the electrons, which particle is oxidized, which is reduced, and what you would see.";
+  "In your own words: A strip of Kryllite (Kr) is placed in ThCl₂. Describe what happens to the electrons, which particle is oxidized, which is reduced, and what you would see.";
+
+/** Fixed clues for the final metal (Ombrium). */
+export const OM_CLUES = [
+  { text: "Velmar (Vm) metal placed in OmCl₂ solution: a bluish-black coating formed.", metal: "Vm" as Sym, ion: "Om" as Sym },
+  { text: "Ombrium (Om) metal placed in QnCl₂ solution: a reddish-brown coating formed and the blue color faded.", metal: "Om" as Sym, ion: "Qn" as Sym },
+];
