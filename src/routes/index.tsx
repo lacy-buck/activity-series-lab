@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Beaker } from "@/components/lab/Beaker";
 import { DataTable, key, type Records } from "@/components/lab/DataTable";
 import {
-  ELEMENTS, FULL_SERIES, OM_CLUES, PART1_METALS, PART1_SERIES, QUESTIONS, SOLUTIONS,
-  observation, reacts, shuffle, solutionName, type Sym,
+  ELEMENTS, MAX_ATTEMPTS, PART1_METALS, SOLUTIONS, buildScenario,
+  observation, reacts, type Scenario, shuffle, solutionName, type Sym,
 } from "@/lib/lab";
 import { cn } from "@/lib/utils";
 
@@ -26,7 +26,9 @@ export const Route = createFileRoute("/")({
 
 const STEPS = ["Intro", "Experiment", "Activity series", "New metal", "Electrons"];
 const TOTAL_TESTS = PART1_METALS.length * (SOLUTIONS.length - 1);
-const STORE = "metal-lab-v1";
+const STORE = "metal-lab-v2";
+// Scenario for the current attempt; set by <Lab> before children render.
+let CUR: Scenario = buildScenario(0);
 
 interface State {
   step: number;
@@ -36,22 +38,23 @@ interface State {
   omSlot: number | null;
   omDone: boolean;
   answers: Record<string, number>;
+  attempt: number;
 }
 
-const fresh = (): State => ({
-  step: 0, records: {}, series: shuffle(PART1_SERIES), seriesDone: false,
-  omSlot: null, omDone: false, answers: {},
+const fresh = (attempt = 0): State => ({
+  step: 0, records: {}, series: shuffle(buildScenario(attempt).part1), seriesDone: false,
+  omSlot: null, omDone: false, answers: {}, attempt,
 });
 
 function Lab() {
-  const [s, setS] = useState<State>(fresh);
+  const [s, setS] = useState<State>(() => fresh(0));
   const [loaded, setLoaded] = useState(false);
   const [tableOpen, setTableOpen] = useState(false);
 
   useEffect(() => {
     try {
       const raw = localStorage.getItem(STORE);
-      if (raw) setS(JSON.parse(raw));
+      if (raw) setS({ ...fresh(0), ...JSON.parse(raw) });
     } catch {}
     setLoaded(true);
   }, []);
@@ -59,6 +62,7 @@ function Lab() {
     if (loaded) localStorage.setItem(STORE, JSON.stringify(s));
   }, [s, loaded]);
 
+  CUR = buildScenario(s.attempt);
   const up = (p: Partial<State>) => setS((o) => ({ ...o, ...p }));
   const recorded = Object.keys(s.records).length;
 
@@ -69,6 +73,7 @@ function Lab() {
           <div className="flex items-center gap-2">
             <FlaskConical className="h-6 w-6 text-primary" />
             <h1 className="text-xl font-bold">Metal Mystery Lab</h1>
+            <span className="rounded-full bg-accent px-2 py-0.5 font-mono text-xs text-accent-foreground">Attempt {s.attempt + 1}/{MAX_ATTEMPTS}</span>
           </div>
           <nav className="flex flex-wrap gap-1">
             {STEPS.map((label, i) => (
@@ -95,7 +100,7 @@ function Lab() {
         )}
         {s.step === 2 && <SeriesStep s={s} up={up} />}
         {s.step === 3 && <OmStep s={s} up={up} />}
-        {s.step === 4 && <Questions answers={s.answers} setAnswers={(answers) => up({ answers })} onReset={() => { localStorage.removeItem(STORE); setS(fresh()); }} />}
+        {s.step === 4 && <Questions answers={s.answers} setAnswers={(answers) => up({ answers })} attempt={s.attempt} onReset={() => setS(fresh((s.attempt + 1) % MAX_ATTEMPTS))} />}
       </main>
 
       {s.step > 1 && (
@@ -166,7 +171,7 @@ function Experiment({ records, setRecords, onNext, done }: { records: Records; s
     setTimeout(() => setFinished(true), 3400);
   };
   const mark = (v: "R" | "NR") => {
-    const correct = reacts(metal, ion) ? "R" : "NR";
+    const correct = reacts(CUR.full, metal, ion) ? "R" : "NR";
     if (v !== correct) { setMsg("Look at your observation again — does it describe any change?"); return; }
     setRecords({ ...records, [key(metal, ion)]: v });
     setMsg("Recorded! Pick your next test.");
@@ -180,7 +185,7 @@ function Experiment({ records, setRecords, onNext, done }: { records: Records; s
         <p className="mt-1 text-sm text-muted-foreground">Choose a metal strip and a solution, then run the test.</p>
         <Picker label="Metal strip" items={PART1_METALS} value={metal} onChange={setMetal} />
         <Picker label="Solution" items={SOLUTIONS} value={ion} onChange={setIon} format={solutionName} disabled={(x) => x === metal} />
-        <div className="my-6"><Beaker metal={metal} ion={ion} running={running} /></div>
+        <div className="my-6"><Beaker series={CUR.full} metal={metal} ion={ion} running={running} /></div>
         {metal === ion ? (
           <p className="text-center text-sm text-muted-foreground">A metal in its own solution won't tell you anything — pick a different solution.</p>
         ) : !running ? (
@@ -189,7 +194,7 @@ function Experiment({ records, setRecords, onNext, done }: { records: Records; s
           <p className="text-center font-mono text-sm text-muted-foreground">Observing for 5 minutes…</p>
         ) : (
           <div className="space-y-3">
-            <div className="rounded-lg bg-secondary p-3 text-sm"><b>Observation:</b> {observation(metal, ion)}</div>
+            <div className="rounded-lg bg-secondary p-3 text-sm"><b>Observation:</b> {observation(CUR.full, metal, ion)}</div>
             {records[k] ? (
               <p className="text-center text-sm text-success">Already recorded in your table.</p>
             ) : (
@@ -270,11 +275,11 @@ function SeriesStep({ s, up }: { s: State; up: (p: Partial<State>) => void }) {
     up({ series: a }); setFeedback(null);
   };
   const check = () => {
-    const right = s.series.filter((x, i) => x === PART1_SERIES[i]).length;
-    if (right === PART1_SERIES.length) { up({ seriesDone: true }); setFeedback(null); return; }
-    const qnOff = s.series.indexOf("Qn") !== PART1_SERIES.indexOf("Qn");
+    const right = s.series.filter((x, i) => x === CUR.part1[i]).length;
+    if (right === CUR.part1.length) { up({ seriesDone: true }); setFeedback(null); return; }
+    const qnOff = s.series.indexOf("Qn") !== CUR.part1.indexOf("Qn");
     setFeedback(
-      `${right} of ${PART1_SERIES.length} are in the right spot. ` +
+      `${right} of ${CUR.part1.length} are in the right spot. ` +
         (qnOff
           ? "Hint for Qn: you only have its solution. Look down the QnCl₂ column — which metals were active enough to replace Qn, and which weren't?"
           : "Hint: count the ✓ marks in each metal's row. More ✓ = more active."),
@@ -305,15 +310,15 @@ function OmClues() {
   return (
     <div className="mt-4 rounded-lg border border-dashed border-primary p-4">
       <p className="text-xs font-semibold uppercase tracking-wider text-primary">Ombrium (Om) — limited data</p>
-      <ul className="mt-2 space-y-1 text-sm">{OM_CLUES.map((c) => <li key={c.text}>• {c.text}</li>)}</ul>
+      <ul className="mt-2 space-y-1 text-sm">{CUR.clues.map((c) => <li key={c.text}>• {c.text}</li>)}</ul>
     </div>
   );
 }
 
 function OmStep({ s, up }: { s: State; up: (p: Partial<State>) => void }) {
   const [feedback, setFeedback] = useState<string | null>(null);
-  const correctSlot = FULL_SERIES.indexOf("Om");
-  const preview = s.omSlot === null ? PART1_SERIES : [...PART1_SERIES.slice(0, s.omSlot), "Om" as Sym, ...PART1_SERIES.slice(s.omSlot)];
+  const correctSlot = CUR.full.indexOf("Om");
+  const preview = s.omSlot === null ? CUR.part1 : [...CUR.part1.slice(0, s.omSlot), "Om" as Sym, ...CUR.part1.slice(s.omSlot)];
   const check = () => {
     if (s.omSlot === correctSlot) { up({ omDone: true }); setFeedback(null); }
     else setFeedback("Not quite. For each clue, ask: which substance was the metal, and which was the ion? The metal that gives up electrons is the more active one.");
@@ -326,7 +331,7 @@ function OmStep({ s, up }: { s: State; up: (p: Partial<State>) => void }) {
         <OmClues />
         <p className="mt-5 mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Where does Om go?</p>
         <div className="space-y-1">
-          {Array.from({ length: PART1_SERIES.length + 1 }).map((_, i) => (
+          {Array.from({ length: CUR.part1.length + 1 }).map((_, i) => (
             <div key={i}>
               <button
                 disabled={s.omDone}
@@ -336,9 +341,9 @@ function OmStep({ s, up }: { s: State; up: (p: Partial<State>) => void }) {
                   s.omSlot === i ? "border-primary bg-primary text-primary-foreground" : "border-border text-muted-foreground hover:bg-accent",
                 )}
               >
-                {i === 0 ? "Above Kr (most active)" : i === PART1_SERIES.length ? "Below Th (least active)" : `Between ${PART1_SERIES[i - 1]} and ${PART1_SERIES[i]}`}
+                {i === 0 ? "Above Kr (most active)" : i === CUR.part1.length ? "Below Th (least active)" : `Between ${CUR.part1[i - 1]} and ${CUR.part1[i]}`}
               </button>
-              {i < PART1_SERIES.length && <div className="py-1 pl-3 font-mono text-sm font-bold">{PART1_SERIES[i]}</div>}
+              {i < CUR.part1.length && <div className="py-1 pl-3 font-mono text-sm font-bold">{CUR.part1[i]}</div>}
             </div>
           ))}
         </div>
@@ -361,7 +366,7 @@ function OmStep({ s, up }: { s: State; up: (p: Partial<State>) => void }) {
 }
 
 function Questions({ answers, setAnswers, onReset }: { answers: Record<string, number>; setAnswers: (a: Record<string, number>) => void; onReset: () => void }) {
-  const answered = QUESTIONS.filter((q) => answers[q.id] !== undefined);
+  const answered = CUR.questions.filter((q) => answers[q.id] !== undefined);
   const score = answered.filter((q) => answers[q.id] === q.answer).length;
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_280px]">
@@ -370,7 +375,7 @@ function Questions({ answers, setAnswers, onReset }: { answers: Record<string, n
           <h2 className="text-xl font-bold">What's happening to the electrons?</h2>
           <p className="mt-1 text-sm text-muted-foreground">Use your final activity series to answer. You'll see feedback right away.</p>
         </Card>
-        {QUESTIONS.map((q, n) => {
+        {CUR.questions.map((q, n) => {
           const picked = answers[q.id];
           const done = picked !== undefined;
           return (
@@ -407,14 +412,14 @@ function Questions({ answers, setAnswers, onReset }: { answers: Record<string, n
         <Card>
           <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Final series</p>
           <ol className="mt-2 space-y-1 font-mono text-sm">
-            {FULL_SERIES.map((x, i) => <li key={x}>{i + 1}. <b>{x}</b> <span className="font-sans text-muted-foreground">{ELEMENTS[x].name}</span></li>)}
+            {CUR.full.map((x, i) => <li key={x}>{i + 1}. <b>{x}</b> <span className="font-sans text-muted-foreground">{ELEMENTS[x].name}</span></li>)}
           </ol>
           <p className="mt-2 text-xs text-muted-foreground">↑ loses electrons most easily</p>
         </Card>
         <Card>
           <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Score</p>
-          <p className="mt-1 font-display text-3xl font-bold">{score}/{QUESTIONS.length}</p>
-          {answered.length === QUESTIONS.length && (
+          <p className="mt-1 font-display text-3xl font-bold">{score}/{CUR.questions.length}</p>
+          {answered.length === CUR.questions.length && (
             <Button variant="outline" className="mt-3 w-full" onClick={onReset}>Start over with a fresh lab</Button>
           )}
         </Card>

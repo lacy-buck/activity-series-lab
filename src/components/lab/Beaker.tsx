@@ -1,8 +1,8 @@
 import { ELEMENTS, reacts, solutionName, type Sym } from "@/lib/lab";
 import { cn } from "@/lib/utils";
 
-export function Beaker({ metal, ion, running }: { metal: Sym; ion: Sym; running: boolean }) {
-  const r = reacts(metal, ion);
+export function Beaker({ series, metal, ion, running }: { series: Sym[]; metal: Sym; ion: Sym; running: boolean }) {
+  const r = reacts(series, metal, ion);
   const startColor = ELEMENTS[ion].ionColor;
   const endColor = r ? ELEMENTS[metal].ionColor : startColor;
   return (
