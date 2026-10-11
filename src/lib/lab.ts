@@ -151,14 +151,14 @@ export const QUESTIONS: Question[] = [
     prompt: "Predict: Quarnite (Qn) metal is placed in VmCl₂. Will a reaction occur?",
     options: ["Yes — a reaction occurs", "No — no reaction"],
     answer: 1,
-    explain: "Qn is below Vm, so Qn atoms can"t give electrons to Vm²⁺ ions. NR.",
+    explain: "Qn is below Vm, so Qn atoms can’t give electrons to Vm²⁺ ions. NR.",
   },
   {
     id: "q12",
     prompt: "Predict: Thessium (Th) metal is placed in OmCl₂. Will a reaction occur?",
     options: ["Yes — a reaction occurs", "No — no reaction"],
     answer: 1,
-    explain: "Th is at the bottom of the series — it is less active than every other metal, so it can"t replace Om.",
+    explain: "Th is at the bottom of the series — it is less active than every other metal, so it can’t replace Om.",
   },
   {
     id: "q13",
