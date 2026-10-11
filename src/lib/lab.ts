@@ -127,10 +127,10 @@ export const QUESTIONS: Question[] = [
   },
   {
     id: "q8",
-    prompt: "Velmar (Vm²⁺) reacts with ZbCl₃: 3Vm + 2ZbCl₃ → 3VmCl₂ + 2Zb. How many electrons are transferred in total?",
-    options: ["2", "3", "5", "6"],
-    answer: 3,
-    explain: "Each of the 3 Vm atoms loses 2 electrons (3 × 2 = 6), and each of the 2 Zb³⁺ ions gains 3 (2 × 3 = 6). 6 electrons move from Vm to Zb³⁺.",
+    prompt: "Velmar (Vm) reacts with ZbCl₃. Velmar ions have a 2+ charge (Vm²⁺). How many electrons does ONE Vm atom give up?",
+    options: ["1", "2", "3", "6"],
+    answer: 1,
+    explain: "Vm → Vm²⁺ + 2e⁻. A neutral Vm atom becomes a 2+ ion by giving up 2 electrons.",
   },
 ];
 
