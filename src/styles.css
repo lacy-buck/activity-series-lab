@@ -174,5 +174,5 @@
 @keyframes rise { 0% { transform: translateY(0); opacity: .9 } 100% { transform: translateY(-70px); opacity: 0 } }
 @keyframes coat { from { height: 0 } to { height: 55% } }
 @utility bubble { animation: rise 1.6s ease-in infinite; }
-@utility coat-grow { animation: coat 2.4s ease-out forwards; }
+@utility coat-grow { animation: coat 1.8s ease-out 0.9s both; }
 @utility notebook { background-color: var(--paper); border: 1px solid var(--border); box-shadow: 0 1px 0 var(--border), 0 12px 30px -18px oklch(0.3 0.06 250 / 0.35); }
