@@ -134,10 +134,10 @@ export const QUESTIONS: Question[] = [
   },
   {
     id: "q9",
-    prompt: "In that same reaction (Vm + ZbCl₃), how many electrons does ONE Zb³⁺ ion gain?",
+    prompt: "In that same reaction (Vm + ZbCl₃), how many electrons does ONE Zb ion gain?",
     options: ["1", "2", "3", "6"],
     answer: 2,
-    explain: "Zb³⁺ + 3e⁻ → Zb. A 3+ ion must gain 3 electrons to become a neutral Zb atom.",
+    explain: "Zb³⁺ + 3e⁻ → Zb. The Zb ion has a 3+ charge, so it must gain 3 electrons to become a neutral Zb atom.",
   },
 ];
 
