@@ -139,6 +139,41 @@ export const QUESTIONS: Question[] = [
     answer: 2,
     explain: "Zb³⁺ + 3e⁻ → Zb. The Zb ion has a 3+ charge, so it must gain 3 electrons to become a neutral Zb atom.",
   },
+  {
+    id: "q10",
+    prompt: "Predict: Ombrium (Om) metal is placed in ZbCl₃. Will a reaction occur?",
+    options: ["Yes — a reaction occurs", "No — no reaction"],
+    answer: 0,
+    explain: "Om is above Zb in the series, so Om atoms give electrons to Zb³⁺ ions and Zb metal forms.",
+  },
+  {
+    id: "q11",
+    prompt: "Predict: Quarnite (Qn) metal is placed in VmCl₂. Will a reaction occur?",
+    options: ["Yes — a reaction occurs", "No — no reaction"],
+    answer: 1,
+    explain: "Qn is below Vm, so Qn atoms can"t give electrons to Vm²⁺ ions. NR.",
+  },
+  {
+    id: "q12",
+    prompt: "Predict: Thessium (Th) metal is placed in OmCl₂. Will a reaction occur?",
+    options: ["Yes — a reaction occurs", "No — no reaction"],
+    answer: 1,
+    explain: "Th is at the bottom of the series — it is less active than every other metal, so it can"t replace Om.",
+  },
+  {
+    id: "q13",
+    prompt: "Predict: Quarnite (Qn) metal is placed in ThCl. Will a reaction occur?",
+    options: ["Yes — a reaction occurs", "No — no reaction"],
+    answer: 0,
+    explain: "Qn is above Th, so Qn atoms give electrons to Th⁺ ions and Th metal forms.",
+  },
+  {
+    id: "q14",
+    prompt: "Which metal could replace Ombrium from OmCl₂ solution?",
+    options: ["Quarnite (Qn)", "Zorbium (Zb)", "Kryllite (Kr)", "Thessium (Th)"],
+    answer: 2,
+    explain: "Only metals ABOVE Om in the series (Kr and Vm) can give electrons to Om²⁺. Kr is the only choice above Om.",
+  },
 ];
 
 export const WRITTEN_PROMPT =
