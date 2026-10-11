@@ -163,7 +163,7 @@ function Experiment({ records, setRecords, onNext, done }: { records: Records; s
 
   const run = () => {
     setRunning(true); setFinished(false); setMsg(null);
-    setTimeout(() => setFinished(true), 2600);
+    setTimeout(() => setFinished(true), 3400);
   };
   const mark = (v: "R" | "NR") => {
     const correct = reacts(metal, ion) ? "R" : "NR";
