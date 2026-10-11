@@ -6,10 +6,23 @@
 // You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
+// GitHub Pages build: run with GITHUB_PAGES=true to produce a static site served from
+// https://lacy-buck.github.io/activity-series-lab/. Normal Lovable builds are unaffected.
+const isGitHubPages = process.env.GITHUB_PAGES === "true";
+const BASE = "/activity-series-lab/";
+
 export default defineConfig({
   tanstackStart: {
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
     // nitro/vite builds from this
     server: { entry: "server" },
+    ...(isGitHubPages
+      ? {
+          router: { basepath: BASE },
+          pages: [{ path: "/" }],
+          prerender: { enabled: true, autoStaticPathsDiscovery: false },
+        }
+      : {}),
   },
+  ...(isGitHubPages ? { vite: { base: BASE } } : {}),
 });
