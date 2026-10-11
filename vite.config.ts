@@ -8,7 +8,7 @@ import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
 // GitHub Pages build: run with GITHUB_PAGES=true to produce a static site served from
 // https://lacy-buck.github.io/activity-series-lab/. Normal Lovable builds are unaffected.
-const isGitHubPages = process.env.GITHUB_PAGES === "true";
+const isGitHubPages = process.env["GITHUB_PAGES"] === "true";
 const BASE = "/activity-series-lab/";
 
 export default defineConfig({
