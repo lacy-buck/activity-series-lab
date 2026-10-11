@@ -6,7 +6,7 @@ import { Beaker } from "@/components/lab/Beaker";
 import { DataTable, key, type Records } from "@/components/lab/DataTable";
 import {
   ELEMENTS, FULL_SERIES, OM_CLUES, PART1_METALS, PART1_SERIES, QUESTIONS, SOLUTIONS,
-  observation, reacts, shuffle, type Sym,
+  observation, reacts, shuffle, solutionName, type Sym,
 } from "@/lib/lab";
 import { cn } from "@/lib/utils";
 
@@ -143,7 +143,7 @@ function Intro({ onStart }: { onStart: () => void }) {
       </p>
       <ul className="mt-4 space-y-2 text-sm">
         <li>• <b>Metals you have:</b> {PART1_METALS.map((m) => `${ELEMENTS[m].name} (${m})`).join(", ")}</li>
-        <li>• <b>Solutions you have:</b> {SOLUTIONS.map((m) => `${m}Cl₂`).join(", ")}</li>
+        <li>• <b>Solutions you have:</b> {SOLUTIONS.map((m) => solutionName(m)).join(", ")}</li>
         <li>• <b>Catch:</b> Quarnite (Qn) only came as a solution — there's no Qn metal strip to test.</li>
         <li>• <b>Signs of a reaction:</b> a new solid coating forms on the strip, or the solution color changes.</li>
       </ul>
@@ -179,12 +179,12 @@ function Experiment({ records, setRecords, onNext, done }: { records: Records; s
         <h2 className="text-xl font-bold">Lab bench</h2>
         <p className="mt-1 text-sm text-muted-foreground">Choose a metal strip and a solution, then run the test.</p>
         <Picker label="Metal strip" items={PART1_METALS} value={metal} onChange={setMetal} />
-        <Picker label="Solution" items={SOLUTIONS} value={ion} onChange={setIon} suffix="Cl₂" disabled={(x) => x === metal} />
+        <Picker label="Solution" items={SOLUTIONS} value={ion} onChange={setIon} format={solutionName} disabled={(x) => x === metal} />
         <div className="my-6"><Beaker metal={metal} ion={ion} running={running} /></div>
         {metal === ion ? (
           <p className="text-center text-sm text-muted-foreground">A metal in its own solution won't tell you anything — pick a different solution.</p>
         ) : !running ? (
-          <Button className="w-full" onClick={run}>Drop {ELEMENTS[metal].name} into {ion}Cl₂</Button>
+          <Button className="w-full" onClick={run}>Drop {ELEMENTS[metal].name} into {solutionName(ion)}</Button>
         ) : !finished ? (
           <p className="text-center font-mono text-sm text-muted-foreground">Observing for 5 minutes…</p>
         ) : (
@@ -219,7 +219,7 @@ function Experiment({ records, setRecords, onNext, done }: { records: Records; s
   );
 }
 
-function Picker({ label, items, value, onChange, suffix = "", disabled }: { label: string; items: Sym[]; value: Sym; onChange: (s: Sym) => void; suffix?: string; disabled?: ((s: Sym) => boolean) | undefined }) {
+function Picker({ label, items, value, onChange, format = (x: Sym) => x, disabled }: { label: string; items: Sym[]; value: Sym; onChange: (s: Sym) => void; format?: (s: Sym) => string; disabled?: ((s: Sym) => boolean) | undefined }) {
   return (
     <div className="mt-4">
       <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">{label}</p>
@@ -234,7 +234,7 @@ function Picker({ label, items, value, onChange, suffix = "", disabled }: { labe
               value === x ? "border-primary bg-primary text-primary-foreground" : "border-border bg-paper hover:bg-accent",
             )}
           >
-            {x}{suffix}
+            {format(x)}
           </button>
         ))}
       </div>

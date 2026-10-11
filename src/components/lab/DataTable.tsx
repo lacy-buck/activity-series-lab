@@ -1,4 +1,4 @@
-import { ELEMENTS, SOLUTIONS, type Sym } from "@/lib/lab";
+import { ELEMENTS, SOLUTIONS, solutionName, type Sym } from "@/lib/lab";
 import { cn } from "@/lib/utils";
 
 export type Records = Record<string, "R" | "NR">;
@@ -12,7 +12,7 @@ export function DataTable({ metals, records, highlight }: { metals: Sym[]; recor
           <tr>
             <th className="border border-border bg-muted p-2 text-left text-xs font-semibold">Metal ↓ / Solution →</th>
             {SOLUTIONS.map((s) => (
-              <th key={s} className="border border-border bg-muted p-2 text-center">{s}Cl₂</th>
+              <th key={s} className="border border-border bg-muted p-2 text-center">{solutionName(s)}</th>
             ))}
           </tr>
         </thead>
