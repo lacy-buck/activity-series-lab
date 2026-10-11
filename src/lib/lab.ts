@@ -132,6 +132,13 @@ export const QUESTIONS: Question[] = [
     answer: 1,
     explain: "Vm → Vm²⁺ + 2e⁻. A neutral Vm atom becomes a 2+ ion by giving up 2 electrons.",
   },
+  {
+    id: "q9",
+    prompt: "In that same reaction (Vm + ZbCl₃), how many electrons does ONE Zb³⁺ ion gain?",
+    options: ["1", "2", "3", "6"],
+    answer: 2,
+    explain: "Zb³⁺ + 3e⁻ → Zb. A 3+ ion must gain 3 electrons to become a neutral Zb atom.",
+  },
 ];
 
 export const WRITTEN_PROMPT =
