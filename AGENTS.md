@@ -11,3 +11,4 @@
 
 - Lab chemistry data and rules live in src/lib/lab.ts; UI reads from it so scenarios can change in one place.
 - Student progress is stored in browser localStorage (no backend) — the activity is anonymous practice.
+- GitHub Pages: `bun run build:gh-pages` (GITHUB_PAGES=true) sets the subpath base, router basepath and prerenders "/" to `.output/public`; normal Lovable builds ignore it. Why: Pages only serves static files under a repo subpath.
