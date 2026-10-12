@@ -295,7 +295,7 @@ function SeriesStep({ s, up }: { s: State; up: (p: Partial<State>) => void }) {
           <Button className="mt-4" onClick={check}>Check my series</Button>
         ) : (
           <div className="mt-4 rounded-lg bg-accent p-4">
-            <p className="font-medium text-accent-foreground">Correct! Qn fits between Vm and Zb: Vm metal replaced Qn²⁺, but Zb metal could not.</p>
+            <p className="font-medium text-accent-foreground">Correct! {qnMsg()}</p>
             <Button className="mt-3" onClick={() => up({ step: 3 })}>A new metal arrives →</Button>
           </div>
         )}
@@ -351,7 +351,7 @@ function OmStep({ s, up }: { s: State; up: (p: Partial<State>) => void }) {
           <Button className="mt-4" disabled={s.omSlot === null} onClick={check}>Check placement</Button>
         ) : (
           <div className="mt-4 rounded-lg bg-accent p-4 text-sm text-accent-foreground">
-            <p className="font-medium">Correct! Vm gave electrons to Om²⁺, so Vm is more active than Om. Om gave electrons to Qn²⁺, so Om is more active than Qn.</p>
+            <p className="font-medium">Correct! {omMsg()}</p>
             <Button className="mt-3" onClick={() => up({ step: 4 })}>Explain the electrons →</Button>
           </div>
         )}
@@ -365,7 +365,7 @@ function OmStep({ s, up }: { s: State; up: (p: Partial<State>) => void }) {
   );
 }
 
-function Questions({ answers, setAnswers, onReset }: { answers: Record<string, number>; setAnswers: (a: Record<string, number>) => void; onReset: () => void }) {
+function Questions({ answers, setAnswers, onReset, attempt }: { answers: Record<string, number>; setAnswers: (a: Record<string, number>) => void; onReset: () => void; attempt: number }) {
   const answered = CUR.questions.filter((q) => answers[q.id] !== undefined);
   const score = answered.filter((q) => answers[q.id] === q.answer).length;
   return (
@@ -420,10 +420,26 @@ function Questions({ answers, setAnswers, onReset }: { answers: Record<string, n
           <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Score</p>
           <p className="mt-1 font-display text-3xl font-bold">{score}/{CUR.questions.length}</p>
           {answered.length === CUR.questions.length && (
-            <Button variant="outline" className="mt-3 w-full" onClick={onReset}>Start over with a fresh lab</Button>
+            <Button variant="outline" className="mt-3 w-full" onClick={onReset}>{attempt + 1 < MAX_ATTEMPTS ? `Start attempt ${attempt + 2} — new metals data` : "Start over from attempt 1"}</Button>
           )}
         </Card>
       </aside>
     </div>
   );
+}
+
+function qnMsg() {
+  const p = CUR.part1;
+  const k = p.indexOf("Qn");
+  const above = p[k - 1];
+  const below = p[k + 1];
+  if (!above) return `Qn is at the top: no metal could replace Qn from its solution.`;
+  if (!below) return `Qn is at the bottom: every metal replaced Qn from its solution.`;
+  return `Qn fits between ${above} and ${below}: ${above} metal replaced Qn from its solution, but ${below} metal could not.`;
+}
+
+function omMsg() {
+  const [a, b] = CUR.clues;
+  if (!a || !b) return "";
+  return `${a.metal} gave electrons to Om ions, so ${a.metal} is more active than Om. Om gave electrons to ${b.ion} ions, so Om is more active than ${b.ion}.`;
 }
